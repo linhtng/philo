@@ -44,6 +44,7 @@ typedef struct s_philo
     pthread_t       thread_id;
     int             fork_id[2];
     int             meal_count;
+    pthread_mutex_t meal_count_lock;
     unsigned long   last_eat_time;
     pthread_mutex_t last_eat_lock;
     t_data          *data;
@@ -72,6 +73,9 @@ t_data	        *init_data(char **arv);
 /* philo_time */
 unsigned long	get_curr_time(void);
 void	        ft_usleep(t_data *data, unsigned long sleep_time);
+
+/* philo_action */
+int             philo_eat(t_philo *philo, t_data *data);
 
 /* philo_ending */
 int             philo_ending(t_data *data);
