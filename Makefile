@@ -13,7 +13,12 @@
 NAME = philo
 CFLAGS = -Wall -Wextra -Werror -g3
 SRC = src/philo_main.c \
-	src/philo_check_input.c
+	src/philo_check_input.c \
+	src/philo_init.c \
+	src/philo_utils.c \
+	src/philo_time.c  \
+	src/philo_ending.c \
+	src/philo_action.c \
 OBJSFD 	= objs
 OBJS 	= $(addprefix $(OBJSFD)/, $(notdir $(SRC:.c=.o)))
 HEADERS = include/philo.h
