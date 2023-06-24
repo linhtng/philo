@@ -18,7 +18,8 @@ int philo_take_fork(t_philo *philo, t_data *data)
     ret = TRUE;
     if (!mutex_lock_secured(&data->forks[philo->fork_id[0]]))
         return (0);
-    if (!print_logs(philo, "has taken a fork"))
+    if (!print_logs(philo, "has taken a fork") 
+        || (philo->fork_id[0] == philo->fork_id[1]))
 	{
         pthread_mutex_unlock(&data->forks[philo->fork_id[0]]);
         return (0);
@@ -45,9 +46,16 @@ int update_meal_info(t_philo *philo, t_data *data)
     pthread_mutex_unlock(&philo->last_eat_lock);
     if (data->must_eat)
     {
-        if (!mutex_lock_secured(&philo->last_eat_lock))
-            return (0);
+        philo->meal_count++;
+        if (philo->meal_count == data->must_eat)
+        {
+            if (!mutex_lock_secured(&data->done_eaten_lock))
+                return (0);
+            data->must_eat_done++;
+            pthread_mutex_unlock(&data->done_eaten_lock);
+        }
     }
+    return (1);
 }
 
 int philo_eat(t_philo *philo, t_data *data)

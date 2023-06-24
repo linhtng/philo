@@ -49,13 +49,13 @@ void	destroy_data(t_data *data)
 	{
 		pthread_mutex_destroy(&data->forks[i]);
 		pthread_mutex_destroy(&data->philos[i]->last_eat_lock);
-		pthread_mutex_destroy(&data->philos[i]->meal_count_lock);
 		if (data->philos[i])
 			free(data->philos[i]);
 		i++;
 	}
 	if (data->philos)
 		free(data->philos);
+	pthread_mutex_destroy(&data->done_eaten_lock);
 	pthread_mutex_destroy(&data->ending_lock);
 	pthread_mutex_destroy(&data->logs);
 	free(data);

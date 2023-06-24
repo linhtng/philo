@@ -24,11 +24,6 @@ void	print_fork(t_data *data)
 	}
 }
 
-/* void	*solo_routine(t_data *data)
-{
-
-} */
-
 int	print_logs(t_philo *philo, char *state)
 {
 	unsigned long	time;
@@ -59,6 +54,8 @@ void	*philos_routine(t_philo *philo)
 		if (!print_logs(philo, "is sleeping"))
 			return (NULL);
 		ft_usleep(philo->data,philo->data->time_to_sleep);
+		if (!print_logs(philo, "is thinking"))
+			return (NULL);
 	}
 	while (!philo->data->end_game)
 	{
@@ -67,13 +64,9 @@ void	*philos_routine(t_philo *philo)
 		if (!print_logs(philo, "is sleeping"))
 			return (NULL);
 		ft_usleep(philo->data, philo->data->time_to_sleep);
-		philo_think(philo);
+		if (!print_logs(philo, "is thinking"))
+			return (NULL);
 	}
-}
-
-void	*end_game_check(t_data *data)
-{
-
 }
 
 int	philo_sim(t_data *data)
@@ -81,11 +74,6 @@ int	philo_sim(t_data *data)
 	int	i;
 
 	data->start_time = get_curr_time();
-/* 	if (data->num_philos == 1)
-	{
-		if (!pthread_create(&data->philos[0]->thread_id, NULL, solo_routine, data))
-			return (ft_putstr_fd("solo thread create failed\n", 2));
-	} */
 	i = 0;
 	while (i < data->num_philos)
 	{

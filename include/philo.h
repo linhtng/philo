@@ -30,6 +30,8 @@ typedef struct s_data
     unsigned long   time_to_eat;
     unsigned long   time_to_sleep;
     int             must_eat;
+    int             must_eat_done;
+    pthread_mutex_t done_eaten_lock;
     int             end_game;
     pthread_t       ending_monitor;
     pthread_mutex_t ending_lock;
@@ -44,7 +46,6 @@ typedef struct s_philo
     pthread_t       thread_id;
     int             fork_id[2];
     int             meal_count;
-    pthread_mutex_t meal_count_lock;
     unsigned long   last_eat_time;
     pthread_mutex_t last_eat_lock;
     t_data          *data;
@@ -79,5 +80,6 @@ int             philo_eat(t_philo *philo, t_data *data);
 
 /* philo_ending */
 int             philo_ending(t_data *data);
+void	        *end_game_check(t_data *data);
 
 #endif

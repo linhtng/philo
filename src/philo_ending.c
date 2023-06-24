@@ -23,3 +23,18 @@ int philo_ending(t_data *data)
     pthread_mutex_unlock(&data->ending_lock);
     return (end);
 }
+
+void	*end_game_check(t_data *data)
+{
+    int i;
+
+    i = 0;
+    while (i < data->num_philos)
+    {
+        if (philo_died(data->philos[i]))
+            return (NULL);
+        i++;
+    }
+    if (data->must_eat && done_eating(data))
+        return (NULL);
+}

@@ -79,8 +79,7 @@ int	init_philo(t_data *data)
 		philos[i]->id = i + 1;
 		philos[i]->data = data;
 		forks_order(data, philos[i]);
-		if (pthread_mutex_init(&philos[i]->last_eat_lock, NULL)
-			|| pthread_mutex_init(&philos[i]->meal_count_lock, NULL))
+		if (pthread_mutex_init(&philos[i]->last_eat_lock, NULL))
 			return (ft_putstr_fd("Mutex init error.\n", 2));
 		i++;
 	}
