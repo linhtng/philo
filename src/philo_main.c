@@ -43,8 +43,11 @@ int	print_logs(t_philo *philo, char *state)
 	return (1);
 }
 
-void	*philos_routine(t_philo *philo)
+void	*philos_routine(void *data)
 {
+	t_philo	*philo;
+
+	philo = (t_philo *)data;
 	if (!mutex_lock_secured(&philo->last_eat_lock))
 		return (NULL);
 	philo->last_eat_time = philo->data->start_time;
@@ -57,7 +60,7 @@ void	*philos_routine(t_philo *philo)
 		if (!print_logs(philo, "is thinking"))
 			return (NULL);
 	}
-	while (!philo->data->end_game)
+	while (1)
 	{
 		if (!philo_eat(philo, philo->data))
 			return (NULL);
@@ -78,12 +81,29 @@ int	philo_sim(t_data *data)
 	while (i < data->num_philos)
 	{
 		if (pthread_create(&data->philos[i]->thread_id, NULL, 
-			philos_routine, data->philos[i]))
+			&philos_routine, data->philos[i]))
 			return (ft_putstr_fd("philo thread creation failed\n", 2));
 		i++;
 	}
-	if (pthread_create(&data->ending_monitor, NULL, end_game_check, data))
+	if (pthread_create(&data->ending_monitor, NULL, &end_game_check, data))
 			return (ft_putstr_fd("end_game thread creation failed\n", 2));
+	return (1);
+}
+
+int	wait_threads(t_data *data)
+{
+	int	i;
+	int	join_err;
+
+	i = 0;
+	join_err = 0;
+	while (i < data->num_philos)
+	{
+		join_err += pthread_join(data->philos[i]->thread_id, NULL);
+		i++;
+	}
+	join_err += pthread_join(data->ending_monitor, NULL);
+	return (join_err);
 }
 
 int	main(int arc, char **arv)
@@ -98,8 +118,14 @@ int	main(int arc, char **arv)
 	if (!valid_input(arc, arv))
 		printf("Invalid arguments.\n");
 	data = init_data(arv);
-	if (data)
-		print_fork(data);
+	if (!data)
+	{
+		printf("Initializing data failed.\n");
+		return (0);
+	}
+	philo_sim(data);
+	if (wait_threads(data))
+		printf("pthread_join returned error.\n");
 	destroy_data(data);
 	return (0);
 }

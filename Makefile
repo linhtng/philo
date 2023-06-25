@@ -11,32 +11,33 @@
 # **************************************************************************** #
 
 NAME = philo
-CFLAGS = -Wall -Wextra -Werror -g3
-SRC = src/philo_main.c \
-	src/philo_check_input.c \
-	src/philo_init.c \
-	src/philo_utils.c \
-	src/philo_time.c  \
-	src/philo_ending.c \
-	src/philo_action.c \
-OBJSFD 	= objs
-OBJS 	= $(addprefix $(OBJSFD)/, $(notdir $(SRC:.c=.o)))
-HEADERS = include/philo.h
-HEADER_PATH = ./include
+CFLAGS = -Wall -Wextra -Werror
+SRC = philo_main.c \
+	philo_check_input.c \
+	philo_init.c \
+	philo_utils.c \
+	philo_time.c  \
+	philo_ending.c \
+	philo_action.c \
+
+SRCFD = src/
+OBJSFD = objs/
+SRCS	= $(addprefix $(SRCFD), $(SRC))
+OBJ = $(SRC:.c=.o)
+OBJS = $(addprefix $(OBJSFD),$(OBJ))
+
+HEADER_PATH = -I ./include
 
 all: $(NAME)
 
-$(OBJSFD):
-	mkdir $@
+$(OBJSFD)%.o: $(SRCFD)%.c
+	@mkdir -p $(OBJSFD)
+	$(CC) $(CFLAGS) -c $< -o $@ $(HEADER_PATH)
 
-$(OBJSFD)/%.o: src/%.c | $(OBJSFD)
-	cc $(CFLAGS) -I $(HEADER_PATH) -c $< -o $@
-
-$(NAME): $(OBJS) $(HEADERS) | $(OBJSFD)
-	cc $(CFLAGS) $(OBJS) -o $@
+$(NAME): $(OBJS)
+	$(CC) $(CFLAGS) $^ -o $@
 
 clean:
-	rm -f $(OBJS)
 	rm -rf $(OBJSFD)
 
 fclean: clean

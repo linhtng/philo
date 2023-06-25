@@ -55,9 +55,8 @@ void	destroy_data(t_data *data)
 	}
 	if (data->philos)
 		free(data->philos);
-	pthread_mutex_destroy(&data->done_eaten_lock);
+	pthread_mutex_destroy(&data->done_eating_lock);
 	pthread_mutex_destroy(&data->ending_lock);
 	pthread_mutex_destroy(&data->logs);
 	free(data);
 }
-

@@ -12,7 +12,7 @@
 
 #include "../include/philo.h"
 
-int	init_forks(t_data *data)
+static int	init_forks(t_data *data)
 {
 	pthread_mutex_t	*forks;
 	int				i;
@@ -33,8 +33,9 @@ int	init_forks(t_data *data)
 
 int	init_data_mutex(t_data *data)
 {
-	if (pthread_mutex_init(&data->ending_lock, NULL)
-		|| pthread_mutex_init(&data->logs, NULL) || !init_forks)
+	if (pthread_mutex_init(&data->ending_lock, NULL) 
+		|| pthread_mutex_init(&data->done_eating_lock, NULL)
+		|| pthread_mutex_init(&data->logs, NULL) || !init_forks(data))
 	{
 		ft_putstr_fd("Mutex init error\n", 2);
 		return (0);

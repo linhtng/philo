@@ -24,17 +24,78 @@ int philo_ending(t_data *data)
     return (end);
 }
 
-void	*end_game_check(t_data *data)
+int philo_died(t_data *data, t_philo *philo)
 {
-    int i;
+    int ret;
+
+    ret = FALSE;
+    printf("line 32\n");
+    if (!mutex_lock_secured(&philo->last_eat_lock))
+    {
+        printf("line 34\n");
+        return (LOCK_ERROR);
+    }
+    if ((get_curr_time() - philo->last_eat_time) >= data->time_to_die)
+    {
+        ret = TRUE;
+        printf("line 37\n");
+        print_logs(philo, "died");
+        printf("line 39\n");
+        if (mutex_lock_secured(&data->ending_lock))
+        {
+            data->end_game = 1;
+            pthread_mutex_unlock(&data->ending_lock);
+        }
+    }
+    pthread_mutex_unlock(&philo->last_eat_lock);
+    return (ret);
+}
+
+int done_eating(t_data *data)
+{
+    int ret;
+
+    ret = FALSE;
+    if (!mutex_lock_secured(&data->done_eating_lock))
+        return (LOCK_ERROR);
+    if (data->must_eat_done == data->num_philos)
+    {
+        ret = TRUE;
+        if (mutex_lock_secured(&data->ending_lock))
+        {
+            data->end_game = 1;
+            pthread_mutex_unlock(&data->ending_lock);
+        }
+    }
+    pthread_mutex_unlock(&data->done_eating_lock);
+    return (ret);
+}
+
+void	*end_game_check(void *sim_data)
+{
+    t_data  *data;
+    int     i;
+    int     stop;
 
     i = 0;
-    while (i < data->num_philos)
+    stop = 0;
+    data = (t_data *)sim_data;
+    ft_usleep(data, data->time_to_die);
+    while (!stop)
     {
-        if (philo_died(data->philos[i]))
-            return (NULL);
-        i++;
+        while (i < data->num_philos)
+        {
+            printf("line 81\n");
+            if (philo_died(data, data->philos[i]))
+            {
+                printf("line 84\n");
+                stop = 1;
+                break ;
+            }
+            i++;
+        }
+        if (!stop && data->must_eat && done_eating(data))
+            stop = 1;
     }
-    if (data->must_eat && done_eating(data))
-        return (NULL);
+    return (NULL);
 }
