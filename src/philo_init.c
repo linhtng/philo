@@ -6,7 +6,7 @@
 /*   By: thuynguy <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/22 19:23:43 by thuynguy          #+#    #+#             */
-/*   Updated: 2023/06/22 19:23:45 by thuynguy         ###   ########.fr       */
+/*   Updated: 2023/07/04 21:18:58 by thuynguy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static int	init_forks(t_data *data)
 	pthread_mutex_t	*forks;
 	int				i;
 
-	forks = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t) * data->num_philos);
+	forks = malloc(sizeof(pthread_mutex_t) * data->num_philos);
 	if (!forks)
 		return (0);
 	i = 0;
@@ -33,7 +33,7 @@ static int	init_forks(t_data *data)
 
 int	init_data_mutex(t_data *data)
 {
-	if (pthread_mutex_init(&data->ending_lock, NULL) 
+	if (pthread_mutex_init(&data->ending_lock, NULL)
 		|| pthread_mutex_init(&data->done_eating_lock, NULL)
 		|| pthread_mutex_init(&data->logs, NULL) || !init_forks(data))
 	{

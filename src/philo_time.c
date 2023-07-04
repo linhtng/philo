@@ -6,28 +6,38 @@
 /*   By: thuynguy <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/22 19:21:10 by thuynguy          #+#    #+#             */
-/*   Updated: 2023/06/22 19:21:12 by thuynguy         ###   ########.fr       */
+/*   Updated: 2023/07/04 21:27:44 by thuynguy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../include/philo.h"
 
-unsigned long	get_curr_time(void)
+long long	get_time_ms(struct timeval begin)
 {
-	struct timeval t;
+	struct timeval	now;
 
-	gettimeofday(&t, NULL);
-	return (t.tv_sec * 1000 + t.tv_usec / 1000);
+	gettimeofday(&now, NULL);
+	return ((now.tv_sec - begin.tv_sec) * 1000
+		+ (now.tv_usec - begin.tv_usec) / 1000);
 }
 
-void	ft_usleep(t_data *data, unsigned long sleep_time)
+long long	sim_time_now(struct timeval begin)
 {
-	unsigned long	stop_point;
+	struct timeval	now;
 
-	stop_point = get_curr_time() + sleep_time;
-    while (get_curr_time() < stop_point)
-    {
-        if (philo_ending(data) != FALSE)
-            break ;
-        usleep(500);
-    }
+	gettimeofday(&now, NULL);
+	return ((now.tv_sec - begin.tv_sec) * 1000000
+		+ (now.tv_usec - begin.tv_usec));
+}
+
+void	ft_usleep(t_data *data, long long sleep_time)
+{
+	long long	stop_point;
+
+	stop_point = sim_time_now(data->begin_t) + sleep_time * 1000;
+	while (sim_time_now(data->begin_t) < stop_point)
+	{
+		if (philo_ending(data) != FALSE)
+			break ;
+		usleep(500);
+	}
 }
