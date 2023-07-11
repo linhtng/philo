@@ -34,10 +34,9 @@ static int	init_forks(t_data *data)
 int	init_data_mutex(t_data *data)
 {
 	if (pthread_mutex_init(&data->ending_lock, NULL)
-		|| pthread_mutex_init(&data->done_eating_lock, NULL)
 		|| pthread_mutex_init(&data->logs, NULL) || !init_forks(data))
 	{
-		ft_putstr_fd("Mutex init error\n", 2);
+		printf("Mutex init error\n");
 		return (0);
 	}	
 	return (1);
@@ -45,7 +44,10 @@ int	init_data_mutex(t_data *data)
 
 void	forks_order(t_data *data, t_philo *philo)
 {
-	if (philo->id % 2)
+	int	odd_id;
+
+	odd_id = philo->id % 2;
+	if (odd_id)
 	{
 		philo->fork_id[0] = philo->id;
 		if (philo->id == data->num_philos)
@@ -80,7 +82,8 @@ int	init_philo(t_data *data)
 		philos[i]->id = i + 1;
 		philos[i]->data = data;
 		forks_order(data, philos[i]);
-		if (pthread_mutex_init(&philos[i]->last_eat_lock, NULL))
+		if (pthread_mutex_init(&philos[i]->last_eat_lock, NULL)
+			|| pthread_mutex_init(&philos[i]->done_eating_lock, NULL))
 			return (ft_putstr_fd("Mutex init error.\n", 2));
 		i++;
 	}
@@ -94,7 +97,7 @@ t_data	*init_data(char **arv)
 	data = (t_data *) malloc(sizeof(t_data));
 	if (!data)
 		return (NULL);
-	memset(data, 0, sizeof(&data));
+	memset(data, 0, sizeof(t_data));
 	data->num_philos = ft_atoi(arv[1]);
 	data->time_to_die = ft_atoi(arv[2]);
 	data->time_to_eat = ft_atoi(arv[3]);

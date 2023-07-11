@@ -38,21 +38,23 @@ int	philo_take_fork(t_philo *philo, t_data *data)
 	return (ret);
 }
 
-int	update_meal_info(t_philo *philo, t_data *data)
+int	update_meal_info(t_philo *philo, t_data *data, int *sim_cont)
 {
 	if (!mutex_lock_secured(&philo->last_eat_lock))
 		return (0);
 	philo->last_eat_time = sim_time_now(data->begin_t);
 	pthread_mutex_unlock(&philo->last_eat_lock);
+	*sim_cont = TRUE;
 	if (data->must_eat)
 	{
 		philo->meal_count++;
 		if (philo->meal_count == data->must_eat)
 		{
-			if (!mutex_lock_secured(&data->done_eating_lock))
+			*sim_cont = FALSE;
+			if (!mutex_lock_secured(&philo->done_eating_lock))
 				return (0);
-			data->must_eat_done++;
-			pthread_mutex_unlock(&data->done_eating_lock);
+			philo->done_eating++;
+			pthread_mutex_unlock(&philo->done_eating_lock);
 		}
 	}
 	return (1);
@@ -67,13 +69,11 @@ int	philo_eat(t_philo *philo, t_data *data)
 	{
 		return (0);
 	}
-	if (print_logs(philo, "is eating"))
+	if (update_meal_info(philo, data, &ret))
 	{
-		if (update_meal_info(philo, data))
-		{
-			ft_usleep(philo->data, philo->data->time_to_eat);
-			ret = TRUE;
-		}
+		if (!print_logs(philo, "is eating"))
+			ret = FALSE;
+		ft_usleep(philo->data, philo->data->time_to_eat);
 	}
 	pthread_mutex_unlock(&data->forks[philo->fork_id[0]]);
 	pthread_mutex_unlock(&data->forks[philo->fork_id[1]]);

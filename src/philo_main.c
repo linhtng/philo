@@ -50,6 +50,7 @@ void	*philos_routine(void *data)
 		ft_usleep(philo->data, philo->data->time_to_sleep);
 		if (!print_logs(philo, "is thinking"))
 			return (NULL);
+		usleep(200 - philo->id + 1);
 	}
 }
 
@@ -63,11 +64,17 @@ int	philo_sim(t_data *data)
 	{
 		if (pthread_create(&data->philos[i]->thread_id, NULL,
 				&philos_routine, data->philos[i]))
-			return (ft_putstr_fd("philo thread creation failed\n", 2));
+		{
+			printf("philo thread creation failed\n");
+			return (0);
+		}
 		i++;
 	}
 	if (pthread_create(&data->ending_monitor, NULL, &end_game_check, data))
-		return (ft_putstr_fd("end_game thread creation failed\n", 2));
+	{
+		printf("end_game thread creation failed\n");
+		return (0);
+	}
 	return (1);
 }
 
@@ -97,7 +104,10 @@ int	main(int arc, char **arv)
 		return (0);
 	}
 	if (!valid_input(arc, arv))
+	{
 		printf("Invalid arguments.\n");
+		return (0);
+	}
 	data = init_data(arv);
 	if (!data)
 	{

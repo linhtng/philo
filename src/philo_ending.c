@@ -30,9 +30,7 @@ int	philo_died(t_data *data, t_philo *philo)
 
 	ret = FALSE;
 	if (!mutex_lock_secured(&philo->last_eat_lock))
-	{
 		return (LOCK_ERROR);
-	}
 	if ((sim_time_now(data->begin_t) - philo->last_eat_time)
 		>= data->time_to_die * 1000)
 	{
@@ -48,23 +46,21 @@ int	philo_died(t_data *data, t_philo *philo)
 	return (ret);
 }
 
-int	done_eating(t_data *data)
+int	done_eating(t_data *data, t_philo *philo, int *done_eat)
 {
 	int	ret;
 
 	ret = FALSE;
-	if (!mutex_lock_secured(&data->done_eating_lock))
+	if (!data->must_eat)
+		return (ret);
+	if (!mutex_lock_secured(&philo->done_eating_lock))
 		return (LOCK_ERROR);
-	if (data->must_eat_done == data->num_philos)
+	if (philo->done_eating)
 	{
 		ret = TRUE;
-		if (mutex_lock_secured(&data->ending_lock))
-		{
-			data->end_game = 1;
-			pthread_mutex_unlock(&data->ending_lock);
-		}
+		*done_eat += 1;
 	}
-	pthread_mutex_unlock(&data->done_eating_lock);
+	pthread_mutex_unlock(&philo->done_eating_lock);
 	return (ret);
 }
 
@@ -72,26 +68,25 @@ void	*end_game_check(void *sim_data)
 {
 	t_data	*data;
 	int		i;
-	int		stop;
+	int		done_eat;
 
-	i = 0;
-	stop = 0;
+	done_eat = 0;
 	data = (t_data *)sim_data;
-	while (!stop)
+	while (1)
 	{
 		usleep(500);
 		i = 0;
-		while (i < data->num_philos)
+		done_eat = 0;
+		while (i < data->num_philos && done_eat != data->num_philos)
 		{
-			if (philo_died(data, data->philos[i]))
+			if (done_eating(data, data->philos[i], &done_eat) == FALSE)
 			{
-				stop = 1;
-				break ;
+				if (philo_died(data, data->philos[i]))
+					return (NULL);
 			}
 			i++;
 		}
-		if (!stop && data->must_eat && done_eating(data))
-			stop = 1;
+		if (done_eat == data->num_philos)
+			return (NULL);
 	}
-	return (NULL);
 }

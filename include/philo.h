@@ -30,8 +30,6 @@ typedef struct s_data
 	long long		time_to_eat;
 	long long		time_to_sleep;
 	int				must_eat;
-	volatile int	must_eat_done;
-	pthread_mutex_t	done_eating_lock;
 	volatile int	end_game;
 	pthread_t		ending_monitor;
 	pthread_mutex_t	ending_lock;
@@ -46,6 +44,8 @@ typedef struct s_philo
 	pthread_t		thread_id;
 	int				fork_id[2];
 	int				meal_count;
+	volatile int	done_eating;
+	pthread_mutex_t	done_eating_lock;
 	long long		last_eat_time;
 	pthread_mutex_t	last_eat_lock;
 	t_data			*data;

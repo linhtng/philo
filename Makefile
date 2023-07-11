@@ -11,7 +11,9 @@
 # **************************************************************************** #
 
 NAME = philo
-CFLAGS = -Wall -Wextra -Werror
+CC = cc
+CFLAGS = -Wall -Wextra -Werror -Ofast
+DEBUG = -fsanitize=address -g
 SRC = philo_main.c \
 	philo_check_input.c \
 	philo_init.c \
