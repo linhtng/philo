@@ -17,7 +17,7 @@ int	philo_ending(t_data *data)
 
 	end = FALSE;
 	if (!mutex_lock_secured(&data->ending_lock))
-		end = LOCK_ERROR;
+		return (LOCK_ERROR);
 	if (data->end_game)
 		end = TRUE;
 	pthread_mutex_unlock(&data->ending_lock);
@@ -53,14 +53,15 @@ int	done_eating(t_data *data, t_philo *philo, int *done_eat)
 	ret = FALSE;
 	if (!data->must_eat)
 		return (ret);
-	if (!mutex_lock_secured(&philo->done_eating_lock))
-		return (LOCK_ERROR);
-	if (philo->done_eating)
+	if (mutex_lock_secured(&philo->done_eating_lock))
 	{
-		ret = TRUE;
-		*done_eat += 1;
+		if (philo->done_eating)
+		{
+			ret = TRUE;
+			*done_eat += 1;
+		}
+		pthread_mutex_unlock(&philo->done_eating_lock);
 	}
-	pthread_mutex_unlock(&philo->done_eating_lock);
 	return (ret);
 }
 

@@ -34,10 +34,10 @@ all: $(NAME)
 
 $(OBJSFD)%.o: $(SRCFD)%.c
 	@mkdir -p $(OBJSFD)
-	$(CC) $(CFLAGS) -c $< -o $@ $(HEADER_PATH)
+	$(CC) $(CFLAGS) $(DEBUG) -c $< -o $@ $(HEADER_PATH)
 
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $(DEBUG) $^ -o $@
 
 clean:
 	rm -rf $(OBJSFD)

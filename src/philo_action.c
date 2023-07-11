@@ -66,9 +66,7 @@ int	philo_eat(t_philo *philo, t_data *data)
 
 	ret = FALSE;
 	if (!philo_take_fork(philo, data))
-	{
 		return (0);
-	}
 	if (update_meal_info(philo, data, &ret))
 	{
 		if (!print_logs(philo, "is eating"))
