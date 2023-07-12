@@ -30,16 +30,6 @@ int	ft_putstr_fd(char *s, int fd)
 	return (1);
 }
 
-int	mutex_lock_secured(pthread_mutex_t *mutex)
-{
-	if (pthread_mutex_lock(mutex))
-	{
-		printf("mutex lock failed\n");
-		return (0);
-	}
-	return (1);
-}
-
 void	destroy_data(t_data *data)
 {
 	int	i;

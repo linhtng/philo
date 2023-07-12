@@ -11,24 +11,19 @@
 /* ************************************************************************** */
 #include "../include/philo.h"
 
-int	philo_take_fork(t_philo *philo, t_data *data)
+static int	philo_take_fork(t_philo *philo, t_data *data)
 {
 	int	ret;
 
 	ret = TRUE;
-	if (!mutex_lock_secured(&data->forks[philo->fork_id[0]]))
-		return (0);
+	pthread_mutex_lock(&data->forks[philo->fork_id[0]]);
 	if (!print_logs(philo, "has taken a fork")
 		|| (philo->fork_id[0] == philo->fork_id[1]))
 	{
 		pthread_mutex_unlock(&data->forks[philo->fork_id[0]]);
 		return (0);
 	}
-	if (!mutex_lock_secured(&data->forks[philo->fork_id[1]]))
-	{
-		pthread_mutex_unlock(&data->forks[philo->fork_id[0]]);
-		return (0);
-	}
+	pthread_mutex_lock(&data->forks[philo->fork_id[1]]);
 	if (!print_logs(philo, "has taken a fork"))
 	{
 		pthread_mutex_unlock(&data->forks[philo->fork_id[0]]);
@@ -38,10 +33,9 @@ int	philo_take_fork(t_philo *philo, t_data *data)
 	return (ret);
 }
 
-int	update_meal_info(t_philo *philo, t_data *data, int *sim_cont)
+static void	update_meal_info(t_philo *philo, t_data *data, int *sim_cont)
 {
-	if (!mutex_lock_secured(&philo->last_eat_lock))
-		return (0);
+	pthread_mutex_lock(&philo->last_eat_lock);
 	philo->last_eat_time = sim_time_now(data->begin_t);
 	pthread_mutex_unlock(&philo->last_eat_lock);
 	*sim_cont = TRUE;
@@ -51,13 +45,11 @@ int	update_meal_info(t_philo *philo, t_data *data, int *sim_cont)
 		if (philo->meal_count == data->must_eat)
 		{
 			*sim_cont = FALSE;
-			if (!mutex_lock_secured(&philo->done_eating_lock))
-				return (0);
+			pthread_mutex_lock(&philo->done_eating_lock);
 			philo->done_eating++;
 			pthread_mutex_unlock(&philo->done_eating_lock);
 		}
 	}
-	return (1);
 }
 
 int	philo_eat(t_philo *philo, t_data *data)
@@ -67,12 +59,10 @@ int	philo_eat(t_philo *philo, t_data *data)
 	ret = FALSE;
 	if (!philo_take_fork(philo, data))
 		return (0);
-	if (update_meal_info(philo, data, &ret))
-	{
-		if (!print_logs(philo, "is eating"))
-			ret = FALSE;
-		ft_usleep(philo->data, philo->data->time_to_eat);
-	}
+	update_meal_info(philo, data, &ret);
+	if (!print_logs(philo, "is eating"))
+		ret = FALSE;
+	ft_usleep(philo->data, philo->data->time_to_eat);
 	pthread_mutex_unlock(&data->forks[philo->fork_id[0]]);
 	pthread_mutex_unlock(&data->forks[philo->fork_id[1]]);
 	return (ret);

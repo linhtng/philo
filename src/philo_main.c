@@ -17,8 +17,7 @@ int	print_logs(t_philo *philo, char *state)
 	t_data		*data;
 
 	data = philo->data;
-	if (!mutex_lock_secured(&data->logs))
-		return (0);
+	pthread_mutex_lock(&data->logs);
 	if (philo_ending(data) != FALSE)
 	{
 		pthread_mutex_unlock(&data->logs);
@@ -33,9 +32,11 @@ int	print_logs(t_philo *philo, char *state)
 void	*philos_routine(void *data)
 {
 	t_philo	*philo;
+	int		odd_id;
 
 	philo = (t_philo *)data;
-	if (!(philo->id % 2))
+	odd_id = philo->id % 2;
+	if (!odd_id)
 	{
 		if (!print_logs(philo, "is sleeping"))
 			return (NULL);
@@ -50,7 +51,7 @@ void	*philos_routine(void *data)
 		ft_usleep(philo->data, philo->data->time_to_sleep);
 		if (!print_logs(philo, "is thinking"))
 			return (NULL);
-		usleep(200 - philo->id + 1);
+		usleep(500);
 	}
 }
 

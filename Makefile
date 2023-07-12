@@ -13,7 +13,7 @@
 NAME = philo
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -Ofast
-DEBUG = -fsanitize=address -g
+DEBUG = -fsanitize=thread -g
 SRC = philo_main.c \
 	philo_check_input.c \
 	philo_init.c \
@@ -34,10 +34,10 @@ all: $(NAME)
 
 $(OBJSFD)%.o: $(SRCFD)%.c
 	@mkdir -p $(OBJSFD)
-	$(CC) $(CFLAGS) $(DEBUG) -c $< -o $@ $(HEADER_PATH)
+	$(CC) $(CFLAGS) -c $< -o $@ $(HEADER_PATH)
 
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(DEBUG) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@
 
 clean:
 	rm -rf $(OBJSFD)

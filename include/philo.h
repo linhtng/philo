@@ -55,7 +55,6 @@ enum	e_ending
 {
 	FALSE,
 	TRUE,
-	LOCK_ERROR,
 };
 
 /* philo_check_input  */
@@ -66,7 +65,6 @@ int			ft_atoi(const char *str);
 /* philo_utils */
 int			ft_putstr_fd(char *s, int fd);
 void		destroy_data(t_data *data);
-int			mutex_lock_secured(pthread_mutex_t *mutex);
 
 /* philo_init */
 t_data		*init_data(char **arv);
