@@ -43,7 +43,7 @@
   - even id: sleep, eat, think, repeat until the sim ends.
   
   By doing this, philosophers with an odd id is able to pick up the forks and starts eating before the even id philos. This helps avoid deadlock.
-- Additionally, to avoid deadlock, we impose this strict fork acquisition order: philos with odd id are right-handed, i.e. they always 1st pick up the fork on their right, then pick up the fork on their left. On the contrary, philos with even id are left-handed, they always 1st pick up the fork on their left, then pick up the fork on their right. For example, philos id 1 picks up fork 1 then picks fork 0, while philos id 2 picks up fork 1 then picks fork 2.
+- Additionally, to avoid deadlock, we impose this strict fork acquisition order: philos with odd id are right-handed, i.e. they always 1st pick up the fork on their right, then pick up the fork on their left. On the contrary, philos with even id are left-handed, they always 1st pick up the fork on their left, then pick up the fork on their right. For example, philos id 1 picks up fork 1 then picks fork 0, while philos id 2 picks up fork 1 then picks fork 2. This is necessary because if all philos 1st pick up the fork on their right (or left), i.e philo 1 picks fork 1, philo 2 picks fork 2,..., philo 5 picks fork 0, then nobody is able to get 2 forks -> circular wait that would cause deadlock. 
 - Eat routine: 
       -  lock the fork mutex
       -  write the pick-up fork message
